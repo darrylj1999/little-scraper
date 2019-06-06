@@ -6,7 +6,6 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from tkinter import filedialog
-from tkinter import messagebox
 
 def getDetails(soup):
 	data = []
@@ -33,8 +32,9 @@ class System:
 		# Launch GUI
 		self.top = tkinter.Tk()
 		# Configure UI Elements
-		self.statusText = tkinter.StringVar()
-		self.statusLabel = tkinter.Label(self.top, text="View table in List format without extending Preview!", textvariable=self.statusText, relief=tkinter.RAISED, fg="red")
+		self.statusLabelText = tkinter.StringVar()
+		self.statusLabelText.set("View table in List format without extending Preview!")
+		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusLabelText, relief=tkinter.RAISED, fg="red")
 		self.snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
 		self.undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
 		self.saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
@@ -54,28 +54,32 @@ class System:
 		data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
 		frame = pd.DataFrame.from_records( data )
 		self.databases.append(frame)
-		self.statusText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
+		self.statusLabelText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
 
 	def undo(self):
 		try:
-			self.databases.pop()
-			self.statusText.set("Undo! Number of Pages = {}".format( len(self.databases) ))
-		except IndexError:
-			tkinter.messagebox.showinfo("Error", "Nothing Left to Undo!")
+			if len(self.databases) == 0:
+				self.statusLabelText.set("Nothing left to Undo!")
+			else:
+				self.databases.pop()
+				self.statusLabelText.set("Undo! Number of Pages = {}".format( len(self.databases) ))
 		except:
-			tkinter.messagebox.showinfo("Error", "Unspecified error at undo()")
+			self.statusLabelText.set("Unspecified error at undo()")
 
 	def save(self):
 		try:
-			filename = tkinter.filedialog.asksaveasfilename(initialdir = "./", title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
-			pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
-			self.statusText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
+			if len(self.databases) == 0:
+				self.statusLabelText.set("Nothing to Save!")
+			else:
+				filename = tkinter.filedialog.asksaveasfilename(initialdir = "./", title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
+				pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
+				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
 		except:
-			tkinter.messagebox.showinfo("Error", "Unspecified error at save()")
+			self.statusLabelText.set("Unspecified error at save()")
 
 	def clear(self):
 		self.databases = []
-		self.statusText.set("Cleared! Number of Pages = {}".format( len(self.databases) ))
+		self.statusLabelText.set("Cleared! Number of Pages = {}".format( len(self.databases) ))
 
 	def exit(self):
 		self.clear()
