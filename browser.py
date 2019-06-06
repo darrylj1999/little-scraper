@@ -31,6 +31,7 @@ class System:
 
 		# Launch GUI
 		self.top = tkinter.Tk()
+		self.top.title("Little Scraper")
 		# Configure UI Elements
 		self.statusLabelText = tkinter.StringVar()
 		self.statusLabelText.set("View table in List format without extending Preview!")
