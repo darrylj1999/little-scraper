@@ -34,7 +34,7 @@ class System:
 		self.top = tkinter.Tk()
 		# Configure UI Elements
 		self.statusText = tkinter.StringVar()
-		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusText, relief=tkinter.RAISED, fg="red")
+		self.statusLabel = tkinter.Label(self.top, text="View table in List format without extending Preview!", textvariable=self.statusText, relief=tkinter.RAISED, fg="red")
 		self.snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
 		self.undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
 		self.saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
@@ -49,7 +49,6 @@ class System:
 		self.exitButton.pack()
 		# Start Read-Eval-Print loop
 		self.top.mainloop()
-		self.statusText.set("View table in List format without extending Preview!")
 
 	def snapshot(self):
 		data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
