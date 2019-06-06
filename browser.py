@@ -33,28 +33,34 @@ class System:
 		# Launch GUI
 		self.top = tkinter.Tk()
 		# Configure UI Elements
-		snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
-		undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
-		saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
-		clearButton = tkinter.Button(self.top, text="Clear Memory", command=self.clear)
-		exitButton = tkinter.Button(self.top, text="Exit", command=self.exit)
+		self.statusText = tkinter.StringVar()
+		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusText, relief=tkinter.RAISED, fg="red")
+		self.snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
+		self.undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
+		self.saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
+		self.clearButton = tkinter.Button(self.top, text="Clear Memory", command=self.clear)
+		self.exitButton = tkinter.Button(self.top, text="Exit", command=self.exit)
 		# Set positions
-		snapshotButton.pack()
-		undoButton.pack()
-		saveButton.pack()
-		clearButton.pack()
-		exitButton.pack()
+		self.statusLabel.pack()
+		self.snapshotButton.pack()
+		self.undoButton.pack()
+		self.saveButton.pack()
+		self.clearButton.pack()
+		self.exitButton.pack()
 		# Start Read-Eval-Print loop
 		self.top.mainloop()
+		self.statusText.set("View table in List format without extending Preview!")
 
 	def snapshot(self):
 		data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
 		frame = pd.DataFrame.from_records( data )
 		self.databases.append(frame)
+		self.statusText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
 
 	def undo(self):
 		try:
 			self.databases.pop()
+			self.statusText.set("Undo! Number of Pages = {}".format( len(self.databases) ))
 		except IndexError:
 			tkinter.messagebox.showinfo("Error", "Nothing Left to Undo!")
 		except:
@@ -64,11 +70,13 @@ class System:
 		try:
 			filename = tkinter.filedialog.asksaveasfilename(initialdir = "./", title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
 			pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
+			self.statusText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
 		except:
 			tkinter.messagebox.showinfo("Error", "Unspecified error at save()")
 
 	def clear(self):
 		self.databases = []
+		self.statusText.set("Cleared! Number of Pages = {}".format( len(self.databases) ))
 
 	def exit(self):
 		self.clear()
