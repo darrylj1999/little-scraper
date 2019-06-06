@@ -19,54 +19,54 @@ def getDetails(soup):
 			data[-1].append( col.text )
 	return data
 
-databases = [] 
-url = "https://www.salesgenie.com/sign-in/"
+class System:
+	def __init__(self):
+		# Initialize Memory
+		self.databases = []
 
-# Launch Chrome 74
-driver = webdriver.Chrome(executable_path='/Users/darryl/Documents/RESEARCH/SALESGENIE/chromedriver')
+		# Launch Chrome 74
+		self.homepageURL = "https://www.salesgenie.com/sign-in/"
+		self.driver = webdriver.Chrome(executable_path='/Users/darryl/Documents/RESEARCH/SALESGENIE/chromedriver')
+		# Go to Website
+		self.driver.get( self.homepageURL )
 
-# Go to Website
-driver.get(url)
+		# Launch GUI
+		self.top = tkinter.Tk()
+		# Configure UI Elements
+		snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
+		undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
+		saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
+		clearButton = tkinter.Button(self.top, text="Clear Memory", command=self.clear)
+		# Set positions
+		snapshotButton.pack()
+		undoButton.pack()
+		saveButton.pack()
+		clearButton.pack()
+		# Start Read-Eval-Print loop
+		self.top.mainloop()
 
-def snapshot():
-	global databases, driver
-	data = getDetails( BeautifulSoup(driver.page_source, features="html.parser") )
-	frame = pd.DataFrame.from_records( data )
-	databases.append(frame)
+	def snapshot(self):
+		data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
+		frame = pd.DataFrame.from_records( data )
+		self.databases.append(frame)
 
-def undo():
-	global databases
-	try:
-		databases.pop()
-	except IndexError:
-		tkinter.messagebox.showinfo("Error", "Nothing Left to Undo!")
-	except:
-		tkinter.messagebox.showinfo("Error", "Unspecified error at undo()")
+	def undo(self):
+		try:
+			self.databases.pop()
+		except IndexError:
+			tkinter.messagebox.showinfo("Error", "Nothing Left to Undo!")
+		except:
+			tkinter.messagebox.showinfo("Error", "Unspecified error at undo()")
 
-def save():
-	global databases
-	try:
-		database = pd.concat( databases, ignore_index=True )
-		filename = tkinter.filedialog.asksaveasfilename(initialdir = "./",title = "Select file",filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
-		database.to_excel(filename, index=False, header=None)
-	except:
-		tkinter.messagebox.showinfo("Error", "Unspecified error at save()")
+	def save(self):
+		try:
+			database = pd.concat( self.databases, ignore_index=True )
+			filename = tkinter.filedialog.asksaveasfilename(initialdir = "./",title = "Select file",filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
+			database.to_excel(filename, index=False, header=None)
+		except:
+			tkinter.messagebox.showinfo("Error", "Unspecified error at save()")
 
-def clear():
-	global databases
-	databases = []
-	
+	def clear(self):
+		self.databases = []
 
-userame = "al@allschoolfundraising.com"
-password = "little1"
-
-top = tkinter.Tk()
-snapshotButton = tkinter.Button(top, text="Save Snapshot to Memory", command=snapshot)
-undoButton = tkinter.Button(top, text="Undo Latest Snapshot", command=undo)
-saveButton = tkinter.Button(top, text="Save Memory to File", command=save)
-clearButton = tkinter.Button(top, text="Clear Memory", command=clear)
-snapshotButton.pack()
-undoButton.pack()
-saveButton.pack()
-clearButton.pack()
-top.mainloop()
+me = System()
