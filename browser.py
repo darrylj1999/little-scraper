@@ -62,9 +62,8 @@ class System:
 
 	def save(self):
 		try:
-			database = pd.concat( self.databases, ignore_index=True )
-			filename = tkinter.filedialog.asksaveasfilename(initialdir = "./",title = "Select file",filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
-			database.to_excel(filename, index=False, header=None)
+			filename = tkinter.filedialog.asksaveasfilename(initialdir = "./", title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
+			pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
 		except:
 			tkinter.messagebox.showinfo("Error", "Unspecified error at save()")
 
