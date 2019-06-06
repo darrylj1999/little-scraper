@@ -19,10 +19,6 @@ def getDetails(soup):
 			data[-1].append( col.text )
 	return data
 
-def saveToFile(filename, string):
-	with open(filename, 'w') as outfile:
-		outfile.write(string)
-
 databases = [] 
 url = "https://www.salesgenie.com/sign-in/"
 
