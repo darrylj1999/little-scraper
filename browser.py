@@ -1,4 +1,5 @@
 # Python 3
+import os
 import tkinter
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -25,7 +26,8 @@ class System:
 
 		# Launch Chrome 74
 		self.homepageURL = "https://www.salesgenie.com/sign-in/"
-		self.driver = webdriver.Chrome(executable_path='/Users/darryl/Documents/RESEARCH/SALESGENIE/chromedriver')
+		self.chromedriverPath = os.path.join(os.getcwd(), 'chromedriver')
+		self.driver = webdriver.Chrome(executable_path=self.chromedriverPath)
 		# Go to Website
 		self.driver.get( self.homepageURL )
 
@@ -72,7 +74,7 @@ class System:
 			if len(self.databases) == 0:
 				self.statusLabelText.set("Nothing to Save!")
 			else:
-				filename = tkinter.filedialog.asksaveasfilename(initialdir = "./", title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
+				filename = tkinter.filedialog.asksaveasfilename(initialdir=os.getcwd(), title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
 				pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
 		except:
