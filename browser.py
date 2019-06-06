@@ -37,11 +37,13 @@ class System:
 		undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
 		saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
 		clearButton = tkinter.Button(self.top, text="Clear Memory", command=self.clear)
+		exitButton = tkinter.Button(self.top, text="Exit", command=self.exit)
 		# Set positions
 		snapshotButton.pack()
 		undoButton.pack()
 		saveButton.pack()
 		clearButton.pack()
+		exitButton.pack()
 		# Start Read-Eval-Print loop
 		self.top.mainloop()
 
@@ -68,5 +70,10 @@ class System:
 
 	def clear(self):
 		self.databases = []
+
+	def exit(self):
+		self.clear()
+		self.driver.close()
+		self.top.destroy()
 
 me = System()
