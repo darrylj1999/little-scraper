@@ -59,7 +59,7 @@ class System:
 	def undo(self):
 		try:
 			if len(self.databases) == 0:
-				self.statusLabelText.set("Nothing left to Undo!")
+				self.statusLabelText.set("Nothing to Undo!")
 			else:
 				self.databases.pop()
 				self.statusLabelText.set("Undo! Number of Pages = {}".format( len(self.databases) ))
@@ -78,8 +78,11 @@ class System:
 			self.statusLabelText.set("Unspecified error at save()")
 
 	def clear(self):
-		self.databases = []
-		self.statusLabelText.set("Cleared! Number of Pages = {}".format( len(self.databases) ))
+		if len(self.databases) == 0:
+			self.statusLabelText.set("Nothing to Clear!")
+		else:
+			self.databases = []
+			self.statusLabelText.set("Cleared! Number of Pages = {}".format( len(self.databases) ))
 
 	def exit(self):
 		self.clear()
