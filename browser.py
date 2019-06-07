@@ -54,10 +54,15 @@ class System:
 		self.top.mainloop()
 
 	def snapshot(self):
-		data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
-		frame = pd.DataFrame.from_records( data )
-		self.databases.append(frame)
-		self.statusLabelText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
+		try:
+			data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
+			frame = pd.DataFrame.from_records( data )
+			self.databases.append(frame)
+			self.statusLabelText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
+		except AttributeError:
+			self.statusLabelText.set("Incorrect Table Format! Number of Pages = {}".format( len(self.databases) ))
+		except:
+			self.statusLabelText.set("Unspecified error at snapshot()")
 
 	def undo(self):
 		try:
