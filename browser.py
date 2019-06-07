@@ -37,7 +37,7 @@ class System:
 		# Configure UI Elements
 		self.statusLabelText = tkinter.StringVar()
 		self.statusLabelText.set("View table in List format without extending Preview!")
-		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusLabelText, relief=tkinter.RAISED, fg="red")
+		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusLabelText, fg="red")
 		self.snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
 		self.undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
 		self.saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
