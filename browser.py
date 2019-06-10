@@ -1,6 +1,8 @@
 # Python 3
 import os
 import tkinter
+import platform
+import subprocess
 import pandas as pd
 import pandas.io.formats.excel
 from bs4 import BeautifulSoup
@@ -9,6 +11,15 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from tkinter import filedialog
 from collections import defaultdict
+
+def openWithDefaultApplication(filename):
+	OSName = platform.system()
+	if OSName == 'Darwin':       			# macOS
+		subprocess.call( ('open', filename) )
+	elif OSName == 'Windows':    			# Windows
+		os.startfile( filename )
+	else:                                   # linux variants
+		subprocess.call( ('xdg-open', filename) )
 
 def getDetails(soup):
 	data = defaultdict(list)
@@ -103,6 +114,7 @@ class System:
 				# Save to file
 				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
+				openWithDefaultApplication( filename )
 		except:
 			self.statusLabelText.set("Unspecified error at save()")
 
