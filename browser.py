@@ -79,8 +79,15 @@ class System:
 			if len(self.databases) == 0:
 				self.statusLabelText.set("Nothing to Save!")
 			else:
+				# Get filename from User
 				filename = tkinter.filedialog.asksaveasfilename(initialdir=os.getcwd(), title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
-				pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(filename, index=False, header=None)
+				writer = pd.ExcelWriter(filename, engine='xlsxwriter')
+				# Set font size to 10pt
+				writer.book.formats[0].set_font_size(10)
+				# Output through writer
+				pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(writer, index=False, header=None)
+				# Save to file
+				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
 		except:
 			self.statusLabelText.set("Unspecified error at save()")
