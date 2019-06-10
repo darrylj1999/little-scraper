@@ -2,25 +2,29 @@
 import os
 import tkinter
 import pandas as pd
+import pandas.io.formats.excel
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from tkinter import filedialog
+from collections import defaultdict
 
 def getDetails(soup):
-	data = []
+	data = defaultdict(list)
 	table = soup.find("tbody", class_="column-rows")
 	for br in soup.find_all("br"):
 		br.replace_with(" ")
 	for row in table.find_all("tr"):
-		data.append([])
 		for col in row.find_all("td"):
-			data[-1].append( col.text )
+			heading = col.div['class'][-1].replace('-data', '')
+			data[heading].append(col.text)
 	return data
 
 class System:
 	def __init__(self):
+		# Make sure user-defined header formats are cleared
+		pandas.io.formats.excel.header_style = None
 		# Initialize Memory
 		self.databases = []
 
@@ -56,7 +60,7 @@ class System:
 	def snapshot(self):
 		try:
 			data = getDetails( BeautifulSoup(self.driver.page_source, features="html.parser") )
-			frame = pd.DataFrame.from_records( data )
+			frame = pd.DataFrame( data )
 			self.databases.append(frame)
 			self.statusLabelText.set("Snapshot! Number of Pages = {}".format( len(self.databases) ))
 		except AttributeError:
@@ -79,13 +83,23 @@ class System:
 			if len(self.databases) == 0:
 				self.statusLabelText.set("Nothing to Save!")
 			else:
+				# Formatting parameters
+				isBold = True
+				fontSize = 10
+				sheetName = "Sheet1"
+				sortBy = "SICDescription"
 				# Get filename from User
 				filename = tkinter.filedialog.asksaveasfilename(initialdir=os.getcwd(), title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
 				writer = pd.ExcelWriter(filename, engine='xlsxwriter')
-				# Set font size to 10pt
-				writer.book.formats[0].set_font_size(10)
+				# Set font formatting
+				headerFormat = writer.book.add_format( {'bold': isBold, 'font_size': fontSize} )
+				writer.book.formats[0].set_font_size( fontSize )
 				# Output through writer
-				pd.concat( self.databases, ignore_index=True ).sort_values(by=[0]).to_excel(writer, index=False, header=None)
+				memory = pd.concat(self.databases, ignore_index=True).sort_values( by=[sortBy] )
+				memory.to_excel(writer, header=None, startrow=1, index=False, sheet_name=sheetName)
+				# Write the column headers with the defined format.
+				for col, headerName in enumerate( memory.columns.values ):
+					writer.sheets[ sheetName ].write(0, col, headerName, headerFormat)
 				# Save to file
 				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
