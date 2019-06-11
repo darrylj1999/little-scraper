@@ -74,7 +74,7 @@ class System:
 		self.statusLabel = tkinter.Label(self.top, textvariable=self.statusLabelText, fg="red")
 		self.snapshotButton = tkinter.Button(self.top, text="Save Snapshot to Memory", command=self.snapshot)
 		self.undoButton = tkinter.Button(self.top, text="Undo Latest Snapshot", command=self.undo)
-		self.saveButton = tkinter.Button(self.top, text="Save Memory to File", command=self.save)
+		self.saveButton = tkinter.Button(self.top, text="Export Memory to File", command=self.save)
 		self.clearButton = tkinter.Button(self.top, text="Clear Memory", command=self.clear)
 		self.exitButton = tkinter.Button(self.top, text="Exit", command=self.exit)
 		# Set positions
