@@ -5,31 +5,50 @@ import platform
 import subprocess
 import pandas as pd
 import pandas.io.formats.excel
-from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from tkinter import filedialog
+from bs4 import Tag, BeautifulSoup
 from collections import defaultdict
 
+# Taken from https://stackoverflow.com/questions/434597/open-document-with-default-os-application-in-python-both-in-windows-and-mac-os
 def openWithDefaultApplication(filename):
 	OSName = platform.system()
-	if OSName == 'Darwin':       			# macOS
+	# macOS
+	if OSName == 'Darwin':
 		subprocess.call( ('open', filename) )
-	elif OSName == 'Windows':    			# Windows
+	# Windows
+	elif OSName == 'Windows':
 		os.startfile( filename )
-	else:                                   # linux variants
+	# linux variants
+	else: 
 		subprocess.call( ('xdg-open', filename) )
+
+# Taken from https://stackoverflow.com/questions/49649090/separating-by-br-tags-in-get-text
+def getTextBeforeBr(tag, result=''):
+    for x in tag.contents:
+        if isinstance(x, Tag):
+			# if tag is <br>, stop parsing contents
+            if x.name == 'br':
+                return result
+			# for any other tag, recurse
+            else:
+                result = getTextBeforeBr(x, result)
+		# if content is NavigableString (string), append
+        else:
+            result += x
+    return result
 
 def getDetails(soup):
 	data = defaultdict(list)
 	table = soup.find("tbody", class_="column-rows")
-	for br in soup.find_all("br"):
-		br.replace_with(" ")
 	for row in table.find_all("tr"):
 		for col in row.find_all("td"):
 			heading = col.div['class'][-1].replace('-data', '')
-			data[heading].append(col.text)
+			if heading == '':
+				continue
+			data[heading].append( getTextBeforeBr(col) )
 	return data
 
 class System:
@@ -108,7 +127,7 @@ class System:
 				# Output through writer
 				memory = pd.concat(self.databases, ignore_index=True).sort_values( by=[sortBy] )
 				memory.to_excel(writer, header=None, startrow=1, index=False, sheet_name=sheetName)
-				# Write the column headers with the defined format.
+				# Write column headers with defined format.
 				for col, headerName in enumerate( memory.columns.values ):
 					writer.sheets[ sheetName ].write(0, col, headerName, headerFormat)
 				# Save to file
