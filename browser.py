@@ -135,6 +135,8 @@ class System:
 				writer.sheets[ sheetName ].repeat_rows(0)
 				# Landscape mode
 				writer.sheets[ sheetName ].set_landscape()
+				# Show gridlines
+				writer.sheets[ sheetName ].hide_gridlines(0)
 				# Save to file
 				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
