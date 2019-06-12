@@ -131,6 +131,9 @@ class System:
 				for col, headerName in enumerate( memory.columns.values ):
 					writer.sheets[ sheetName ].write(0, col, headerName, headerFormat)
 				# Set Page/Print formatting
+				# Print first row on every page (works on MS Excel)
+				writer.sheets[ sheetName ].repeat_rows(0)
+				# Landscape mode
 				writer.sheets[ sheetName ].set_landscape()
 				# Save to file
 				writer.save()
