@@ -133,7 +133,7 @@ class System:
 				sheetName = "Sheet1"
 				sortBy = "SICDescription"
 				# Get filename from User
-				filename = tkinter.filedialog.asksaveasfilename(initialdir=os.getcwd(), title = "Select file", filetypes = (("Excel Files","*.xlsx"),("all files","*.*")))
+				filename = tkinter.filedialog.asksaveasfilename(initialdir=os.getcwd(), title="Select file", filetypes=[("Excel Files","*.xlsx"), ("All Files","*.*")], defaultextension=".xlsx")
 				writer = pd.ExcelWriter(filename, engine='xlsxwriter')
 				# Set font formatting
 				headerFormat = writer.book.add_format( {'bold': isBold, 'font_size': fontSize} )
@@ -161,7 +161,7 @@ class System:
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
 				openWithDefaultApplication( filename )
 		except:
-			self.statusLabelText.set("Unspecified error at save()")
+			self.statusLabelText.set("Unspecified error at save(). Please use '.xlsx' extension")
 
 	def clear(self):
 		if len(self.databases) == 0:
