@@ -12,6 +12,16 @@ from tkinter import filedialog
 from bs4 import Tag, BeautifulSoup
 from collections import defaultdict
 
+# Taken from https://stackoverflow.com/questions/29463274/simulate-autofit-column-in-xslxwriter
+def getColumnWidths(dataframe, index=False):
+	result = [max([len(str(s)) for s in dataframe[col].values] + [len(col)]) for col in dataframe.columns]
+	if index:
+		# First we find the maximum length of the index column
+		idx_max = max([len(str(s)) for s in dataframe.index.values] + [len(str(dataframe.index.name))])
+		# Then, we concatenate this to the max of the lengths of column name and its values for each column, left to right
+		result = [ idx_max ] + result
+	return result
+
 # Taken from https://stackoverflow.com/questions/434597/open-document-with-default-os-application-in-python-both-in-windows-and-mac-os
 def openWithDefaultApplication(filename):
 	OSName = platform.system()
@@ -135,6 +145,9 @@ class System:
 				for col, headerName in enumerate( memory.columns.values ):
 					writer.sheets[ sheetName ].write(0, col, headerName, headerFormat)
 				# Set Page/Print formatting
+				# AutoFit
+				for i, width in enumerate( getColumnWidths(memory) ):
+					writer.sheets[ sheetName ].set_column(i, i, width)
 				# Print first row on every page (works on MS Excel)
 				writer.sheets[ sheetName ].repeat_rows(0)
 				# Landscape mode
