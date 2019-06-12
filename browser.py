@@ -116,6 +116,10 @@ class System:
 				# Formatting parameters
 				isBold = True
 				fontSize = 10
+				topMargin = 0.25
+				leftMargin = 0.2
+				rightMargin = 0.2
+				bottomMargin = 0.25
 				sheetName = "Sheet1"
 				sortBy = "SICDescription"
 				# Get filename from User
@@ -137,6 +141,8 @@ class System:
 				writer.sheets[ sheetName ].set_landscape()
 				# Show gridlines
 				writer.sheets[ sheetName ].hide_gridlines(0)
+				# Adjust margins
+				writer.sheets[ sheetName ].set_margins(left=leftMargin, right=rightMargin, top=topMargin, bottom=bottomMargin)
 				# Save to file
 				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
