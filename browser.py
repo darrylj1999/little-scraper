@@ -130,6 +130,8 @@ class System:
 				# Write column headers with defined format.
 				for col, headerName in enumerate( memory.columns.values ):
 					writer.sheets[ sheetName ].write(0, col, headerName, headerFormat)
+				# Set Page/Print formatting
+				writer.sheets[ sheetName ].set_landscape()
 				# Save to file
 				writer.save()
 				self.statusLabelText.set("Saved to {}! Number of Pages = {}".format( filename, len(self.databases) ))
